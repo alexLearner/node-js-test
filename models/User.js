@@ -1,34 +1,26 @@
 const bcrypt = require('bcrypt-nodejs');
-const crypto = require('crypto');
 const mongoose = require('mongoose');
+
+const USER_STATUSES = {
+  NONE: 'NONE',
+  SUCCESS: 'SUCCESS',
+  FAILED: 'FAILED',
+};
 
 const userSchema = new mongoose.Schema({
   email: { type: String, unique: true },
   password: String,
-  passwordResetToken: String,
-  passwordResetExpires: Date,
 
-  facebook: String,
-  twitter: String,
-  google: String,
-  github: String,
-  instagram: String,
-  linkedin: String,
-  steam: String,
-  tokens: Array,
+  cards: { type: [String] },
 
-  profile: {
-    name: String,
-    gender: String,
-    location: String,
-    website: String,
-    picture: String
-  }
+  status: {
+    date: { type: Date, default: Date.now },
+    code: { type: String, enum: Object.values(USER_STATUSES), default: USER_STATUSES.NONE },
+  },
+
+  customer: String,
 }, { timestamps: true });
 
-/**
- * Password hash middleware.
- */
 userSchema.pre('save', function save(next) {
   const user = this;
   if (!user.isModified('password')) { return next(); }
@@ -42,29 +34,13 @@ userSchema.pre('save', function save(next) {
   });
 });
 
-/**
- * Helper method for validating user's password.
- */
 userSchema.methods.comparePassword = function comparePassword(candidatePassword, cb) {
   bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
     cb(err, isMatch);
   });
 };
 
-/**
- * Helper method for getting user's gravatar.
- */
-userSchema.methods.gravatar = function gravatar(size) {
-  if (!size) {
-    size = 200;
-  }
-  if (!this.email) {
-    return `https://gravatar.com/avatar/?s=${size}&d=retro`;
-  }
-  const md5 = crypto.createHash('md5').update(this.email).digest('hex');
-  return `https://gravatar.com/avatar/${md5}?s=${size}&d=retro`;
-};
-
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
+module.exports.USER_STATUSES = USER_STATUSES;

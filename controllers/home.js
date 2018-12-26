@@ -1,9 +1,3 @@
-/**
- * GET /
- * Home page.
- */
 exports.index = (req, res) => {
-  res.render('home', {
-    title: 'Home'
-  });
+  res.status(200).json({ message: 'Welcome' });
 };
