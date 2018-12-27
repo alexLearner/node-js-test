@@ -5,7 +5,7 @@ const { USER_STATUSES } = require('../models/User');
 const mailer = require('../helpers/mailer');
 
 const CHARGE_DEFAULT_AMOUNT = 51;
-const CHARGE_DIFF_DAYS = 0;
+const CHARGE_DIFF_DAYS = 7;
 const CHARGE_TIMEOUT_DAYS = 1;
 
 function chargeUser(user, { amount }) {
